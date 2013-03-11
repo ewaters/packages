@@ -16,7 +16,7 @@
 
 Name:           rock-runtime-perl516-core
 Version:        5.16.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Perl 5.16.x runtime
 
 Group:          Development/Languages
@@ -64,6 +64,8 @@ This packages contains resources for building %{name} RPMs.
   -Dusethreads \
   -Duseithreads \
   -Duselargefiles \
+  -Duseshrplib \
+  -Dcccdlflags=-fPIC \
   -Duseperlio
 
 %{__make}
@@ -102,6 +104,11 @@ rm -rf %{buildroot}
 %{_sysconfdir}/rpm/macros.rock-perl516
 
 %changelog
+* Mon Mar 11 2013 Eric Waters <ewaters@gmail.com> - 5.16.2-3
+- Prepare perl for ImageMagick build
+- Add -fPIC (Position Independent Code) cc flag
+- Create libperl.so
+
 * Tue Nov 20 2012 RockStack <packages@rockstack.org> - 5.16.2-2
 - Fix various path issues
 
