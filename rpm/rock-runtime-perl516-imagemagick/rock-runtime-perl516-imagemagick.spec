@@ -23,6 +23,7 @@ BuildRequires:	ghostscript-devel, djvulibre-devel
 BuildRequires:	libwmf-devel, jasper-devel, libtool-ltdl-devel
 BuildRequires:	libX11-devel, libXext-devel, libXt-devel
 BuildRequires:	lcms-devel, libxml2-devel, librsvg2-devel, OpenEXR-devel
+BuildRequires:  patchelf
 Requires:       rock-runtime-perl516-core >= 5.16.2-2
 
 %description
@@ -71,8 +72,8 @@ cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
            --without-included-ltdl --with-ltdl-include=/usr/include \
            --with-ltdl-lib=/usr/lib64
 # Disable rpath
-sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
-sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
+#sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+#sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 # Do *NOT* use %%{?_smp_mflags}, this causes PerlMagick to be silently misbuild
 make
 
@@ -81,6 +82,9 @@ make
 rm -rf %{buildroot}
 
 make install DESTDIR=%{buildroot} INSTALL="install -p"
+
+patchelf --set-rpath %{_libdir} %{buildroot}%{perl_vendorarch}/auto/Image/Magick/Magick.so
+
 cp -a www/source %{buildroot}%{_datadir}/doc/%{upstreamname}-%{VER}
 # Delete *ONLY* _libdir/*.la files! .la files used internally to handle plugins - BUG#185237!!!
 rm %{buildroot}%{_libdir}/*.la
@@ -150,9 +154,9 @@ rm -rf %{buildroot}
 
 %files -f perl-pkg-files
 %defattr(-,root,root,-)
-%doc QuickStart.txt ChangeLog Platforms.txt
-%doc README.txt LICENSE NOTICE AUTHORS.txt NEWS.txt
-%doc PerlMagick/demo/ PerlMagick/Changelog PerlMagick/README.txt
+#%doc QuickStart.txt ChangeLog Platforms.txt
+#%doc README.txt LICENSE NOTICE AUTHORS.txt NEWS.txt
+#%doc PerlMagick/demo/ PerlMagick/Changelog PerlMagick/README.txt
 %{_libdir}/libMagickCore.so.5*
 %{_libdir}/libMagickWand.so.5*
 %{_bindir}/[a-z]*
@@ -161,9 +165,9 @@ rm -rf %{buildroot}
 %{_mandir}/man[145]/[a-z]*
 %{_mandir}/man1/%{upstreamname}.*
 %{_mandir}/man3/*
-%exclude %{_libdir}/%{upstreamname}-%{VER}/modules-Q16/coders/djvu.*
-%{_sysconfdir}/%{upstreamname}
 
+%exclude %{_libdir}/%{upstreamname}-%{VER}/modules-Q16/coders/djvu.*
+%exclude %{_sysconfdir}/%{upstreamname}
 %exclude %{_bindir}/MagickCore-config
 %exclude %{_bindir}/Magick-config
 %exclude %{_bindir}/MagickWand-config
